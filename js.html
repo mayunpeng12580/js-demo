@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title></title>
+</head>
+<body>
+	<style type="text/css">
+		.liactive {
+			color: deepskyblue;
+		}
+		section {
+			display: none;
+		}
+		section.conactive {
+			display: block;
+		}
+	</style>
+	<h4>js面向对象</h4>
+	<div class="tabsbox" id="tab">
+		<nav class="fisrstnav">
+			<ul>
+				<li class="liactive"><span>测试1</span><i class="del">x</i></li>
+				<li><span>测试2</span><i class="del">x</i></li>
+				<li><span>测试3</span><i class="del">x</i></li>
+			</ul>
+			<div class="tabadd">
+				<span>+</span>
+			</div>
+		</nav>
+		
+		<!-- 内容 -->
+		<div class="tabscon">
+			<section class="conactive">测试1</section>
+			<section>测试2</section>
+			<section>测试3</section>
+		</div>
+	</div>
+	
+	<script type="text/javascript">
+		var that;
+		class Tab {
+			constructor(id) {
+				this.main = document.querySelector(id);
+				this.add = this.main.querySelector('.tabadd');
+				this.ul = this.main.querySelector('.fisrstnav ul:first-child');
+				this.fsection = this.main.querySelector('.tabscon');
+				
+				this.init()
+				console.log(this.fsection)
+				that = this
+			}
+			
+			init() {
+				this.updateNode();
+				this.add.onclick = this.addTab;
+				for (var i = 0; i < this.lis.length; i++) {
+					this.lis[i].index = i;
+					this.lis[i].onclick = this.toggleTab;
+					this.remove[i].onclick = this.removeTab;
+					this.spans[i].ondblclick = this.editTab;
+					this.sections[i].ondblclick = this.editTab;
+				}
+			}
+			
+			// 获取页面元素
+			updateNode(){
+				this.lis = this.main.querySelectorAll('li');
+				this.sections = this.main.querySelectorAll('section');
+				this.remove = this.main.querySelectorAll('.del');
+				this.spans = this.main.querySelectorAll(".fisrstnav li span:first-child");
+			}
+			
+			// 切换功能
+			toggleTab() {
+				that.clearClass()
+				this.className = "liactive";
+				that.sections[this.index].className = "conactive";
+			}
+			
+			// 清除样式
+			clearClass() {
+				for (var i = 0; i < this.lis.length; i++) {
+					this.lis[i].className = '';
+					this.sections[i].className = "";
+				}
+			}
+			
+			// 添加功能
+			addTab() {
+				console.log('aa')
+				var random = Math.random();
+				that.clearClass()
+				var li = '<li class="liactive"><span>新选项卡</span><i class="del">x</i></li>';
+				var section = '<section class="conactive">测试'+random+'</section>';
+				that.ul.insertAdjacentHTML('beforeend', li);
+				that.fsection.insertAdjacentHTML('beforeend', section);
+				that.init();
+			}
+			
+			// 删除功能
+			removeTab(e) {
+				// 阻止冒泡
+				e.stopPropagation()
+				var index = this.parentNode.index;
+				console.log(index);
+				that.lis[index].remove();
+				that.sections[index].remove();
+				that.init();
+				if (document.querySelector('.liactive')) return;
+				index--;
+				that.lis[index] && that.lis[index].click();
+				// that.sections[index] && that.sections[index].click();
+				
+			}
+			
+			// 修改功能 
+			editTab() {
+				var str = this.innerHTML;
+				// 双击禁止选中文字
+				window.getSelection ? window.getSelection().removeAllRanges() : document.selection.empty()
+				
+				this.innerHTML = '<input type="text" />';
+				var input = this.children[0];
+				input.value = str;
+				input.select(); // 让文本框文字处于选中状态
+
+				input.onblur = function() {
+					this.parentNode.innerHTML = this.value;
+				}
+
+				input.onkeyup = function(e) {
+					if (e.keyCode === 13) {
+						this.blur();
+					}
+				}
+			}
+		}
+		
+		var tab = new Tab('#tab');
+		
+		
+	</script>
+	
+</body>
+</html>
